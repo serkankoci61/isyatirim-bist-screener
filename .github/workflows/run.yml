@@ -1,4 +1,4 @@
-name: temettu-analizi
+name: isyatirim-bist-screener
 
 on:
   workflow_dispatch:
@@ -22,15 +22,20 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Run workflow
+      - name: Run BIST analysis
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: |
-          python temettu_analizi_workflow.py --telegram
+          python isyatirim_analiz.py --universe bist --output bist_genel_analiz_raporu.xlsx
+          if [ -n "$TELEGRAM_BOT_TOKEN" ] && [ -n "$TELEGRAM_CHAT_ID" ]; then
+            python isyatirim_analiz.py --universe bist --telegram --output bist_genel_analiz_raporu.xlsx
+          fi
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: temettu-analiz-raporu
-          path: temettu_analiz_raporu.xlsx
+          name: bist-genel-analiz-raporu
+          path: |
+            bist_genel_analiz_raporu.xlsx
+            bist_genel_analiz_raporu.json
