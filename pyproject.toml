@@ -1,0 +1,13 @@
+[project]
+name = "isyatirim-analiz"
+version = "1.0.0"
+description = "BIST dividend calendar + Is Yatirim company analysis workflow"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+  "requests>=2.31.0",
+  "openpyxl>=3.1.0",
+]
+
+[project.scripts]
+isyatirim-analiz = "isyatirim_analiz:main"
