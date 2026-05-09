@@ -23,14 +23,19 @@ jobs:
           pip install -r requirements.txt
 
       - name: Run BIST analysis
+        run: |
+          python isyatirim_analiz.py --universe bist --output bist_genel_analiz_raporu.xlsx
+
+      - name: Send Telegram report
+        if: ${{ secrets.TELEGRAM_BOT_TOKEN != '' && secrets.TELEGRAM_CHAT_ID != '' }}
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: |
-          python isyatirim_analiz.py --universe bist --output bist_genel_analiz_raporu.xlsx
-          if [ -n "$TELEGRAM_BOT_TOKEN" ] && [ -n "$TELEGRAM_CHAT_ID" ]; then
-            python isyatirim_analiz.py --universe bist --telegram --output bist_genel_analiz_raporu.xlsx
-          fi
+          curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendDocument" \
+            -F chat_id="${TELEGRAM_CHAT_ID}" \
+            -F caption="BIST genel analiz raporu hazır." \
+            -F document=@bist_genel_analiz_raporu.xlsx
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
